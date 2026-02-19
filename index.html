@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>산책도감 - AI 야생 동식물 식별 앱</title>
+  <link rel="icon" type="image/png" href="images/appicon.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-dark: #0F1A0F;
+      --bg-surface: #1A2E1A;
+      --primary: #4CAF50;
+      --primary-dark: #2D8B4E;
+      --secondary: #FFB74D;
+      --text: #E8F5E9;
+      --text-dim: #A5C4A8;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+      position: relative;
+      background: radial-gradient(ellipse at 50% 0%, rgba(76,175,80,0.15) 0%, transparent 60%);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" x="10" font-size="80" opacity="0.03">🌿</text></svg>') repeat;
+      background-size: 120px;
+      pointer-events: none;
+    }
+
+    .app-icon {
+      width: 140px;
+      height: 140px;
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(76,175,80,0.3);
+      margin-bottom: 32px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero .subtitle {
+      font-size: 1.3rem;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+      font-weight: 300;
+    }
+
+    .hero .tagline {
+      font-size: 1.1rem;
+      color: var(--text);
+      max-width: 520px;
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .badge {
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      background: var(--bg-surface);
+      border: 1px solid rgba(76,175,80,0.3);
+      color: var(--primary);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      animation: bounce 2s infinite;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+
+    /* Section Common */
+    section {
+      padding: 100px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .section-desc {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      margin-bottom: 60px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* How It Works */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 32px;
+    }
+
+    .step {
+      background: var(--bg-surface);
+      border-radius: 24px;
+      padding: 36px 28px;
+      text-align: center;
+      border: 1px solid rgba(76,175,80,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .step:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(76,175,80,0.15);
+    }
+
+    .step-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin: 0 auto 16px;
+    }
+
+    .step-emoji {
+      font-size: 2.8rem;
+      margin-bottom: 16px;
+    }
+
+    .step h3 {
+      font-size: 1.15rem;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .step p {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* Features */
+    .features-section {
+      background: linear-gradient(180deg, transparent, rgba(26,46,26,0.5), transparent);
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+    }
+
+    .feature {
+      display: flex;
+      gap: 16px;
+      padding: 24px;
+      border-radius: 16px;
+      background: rgba(26,46,26,0.6);
+      border: 1px solid rgba(76,175,80,0.08);
+      transition: background 0.3s;
+    }
+
+    .feature:hover {
+      background: var(--bg-surface);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+      width: 48px;
+      text-align: center;
+    }
+
+    .feature h3 {
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+    }
+
+    .feature p {
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* Tech Stack */
+    .tech-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+    }
+
+    .tech-tag {
+      padding: 10px 20px;
+      border-radius: 12px;
+      background: var(--bg-surface);
+      border: 1px solid rgba(76,175,80,0.15);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    .tech-tag:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* AI Architecture */
+    .arch-diagram {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 40px;
+      background: var(--bg-surface);
+      border-radius: 24px;
+      border: 1px solid rgba(76,175,80,0.15);
+    }
+
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .arch-box {
+      padding: 16px 24px;
+      border-radius: 14px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .arch-box.user { background: rgba(255,183,77,0.2); border: 1px solid rgba(255,183,77,0.4); }
+    .arch-box.ai { background: rgba(76,175,80,0.2); border: 1px solid rgba(76,175,80,0.4); }
+    .arch-box.fallback { background: rgba(156,108,231,0.2); border: 1px solid rgba(156,108,231,0.4); }
+
+    .arch-arrow {
+      font-size: 1.4rem;
+      color: var(--text-dim);
+    }
+
+    .arch-note {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* Screenshots placeholder */
+    .screenshots {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .screenshot-card {
+      width: 200px;
+      height: 380px;
+      border-radius: 24px;
+      background: var(--bg-surface);
+      border: 1px solid rgba(76,175,80,0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: transform 0.3s;
+    }
+
+    .screenshot-card:hover {
+      transform: scale(1.03);
+    }
+
+    .screenshot-card .screen-emoji {
+      font-size: 3rem;
+    }
+
+    .screenshot-card .screen-name {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+    }
+
+    .screenshot-card .screen-desc {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      text-align: center;
+      padding: 0 16px;
+      opacity: 0.7;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 60px 20px;
+      border-top: 1px solid rgba(76,175,80,0.1);
+    }
+
+    footer .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    footer p {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    footer .copyright {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      opacity: 0.5;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 2.2rem; }
+      .hero .subtitle { font-size: 1rem; }
+      .section-title { font-size: 1.7rem; }
+      .app-icon { width: 110px; height: 110px; }
+      .arch-flow { flex-direction: column; }
+      .arch-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <div class="hero">
+    <img src="images/appicon.png" alt="산책도감 앱 아이콘" class="app-icon">
+    <h1>산책도감</h1>
+    <p class="subtitle">AI 야생 동식물 식별 앱</p>
+    <p class="tagline">
+      산책 중 발견한 동식물을 촬영하면<br>
+      AI가 종을 식별하고, 생태 이야기를 들려주며,<br>
+      나만의 자연 도감을 만들어 드립니다.
+    </p>
+    <div class="badge-row">
+      <span class="badge">📱 iOS / Android</span>
+      <span class="badge">🤖 GPT-4o Vision</span>
+      <span class="badge">🎨 AI 수채화 일러스트</span>
+      <span class="badge">🔊 음성 가이드</span>
+    </div>
+    <div class="scroll-hint">아래로 스크롤 ↓</div>
+  </div>
+
+  <!-- How It Works -->
+  <section>
+    <h2 class="section-title">어떻게 사용하나요?</h2>
+    <p class="section-desc">3단계만으로 나만의 자연 도감을 완성하세요</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-emoji">📷</div>
+        <div class="step-number">1</div>
+        <h3>촬영하기</h3>
+        <p>산책 중 발견한 동식물을 카메라로 촬영하거나 사진첩에서 선택하세요</p>
+      </div>
+      <div class="step">
+        <div class="step-emoji">🤖</div>
+        <div class="step-number">2</div>
+        <h3>AI 식별</h3>
+        <p>GPT-4o Vision AI가 사진을 분석하여 3개의 후보 종과 생태 이야기를 알려줘요</p>
+      </div>
+      <div class="step">
+        <div class="step-emoji">📚</div>
+        <div class="step-number">3</div>
+        <h3>도감에 저장</h3>
+        <p>맞는 종을 선택해 나만의 도감에 저장하고, AI 수채화 일러스트도 만들어 보세요</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features-section">
+    <h2 class="section-title">주요 기능</h2>
+    <p class="section-desc">자연을 더 가까이, 더 재미있게 경험하세요</p>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🔍</div>
+        <div>
+          <h3>AI 종 식별</h3>
+          <p>GPT-4o Vision이 사진 속 동식물을 분석하여 한국명, 학명, 카테고리, 신뢰도와 함께 3개 후보를 제시합니다</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🛡️</div>
+        <div>
+          <h3>듀얼 AI 안정성</h3>
+          <p>OpenAI 오류 시 Claude AI로 자동 전환되어 언제든 안정적으로 식별이 가능합니다</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🌱</div>
+        <div>
+          <h3>생태 이야기</h3>
+          <p>각 종의 흥미로운 생태적 특징과 재미있는 사실을 친근한 말투로 들려줍니다</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎨</div>
+        <div>
+          <h3>AI 수채화 일러스트</h3>
+          <p>GPT-Image로 식물도감 스타일의 아름다운 수채화 일러스트를 자동 생성합니다</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔊</div>
+        <div>
+          <h3>음성 가이드</h3>
+          <p>OpenAI TTS가 생태 이야기를 따뜻한 목소리로 읽어줍니다. 산책하며 귀로 들어보세요</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📖</div>
+        <div>
+          <h3>나만의 도감 컬렉션</h3>
+          <p>식물, 조류, 곤충, 포유류 카테고리별로 발견한 종을 관리하고 감상하세요</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- App Screens -->
+  <section>
+    <h2 class="section-title">앱 화면</h2>
+    <p class="section-desc">직관적이고 아름다운 다크 자연 테마</p>
+    <div class="screenshots">
+      <div class="screenshot-card">
+        <div class="screen-emoji">🏠</div>
+        <div class="screen-name">홈 화면</div>
+        <div class="screen-desc">컬렉션 진행도와 최근 발견 종</div>
+      </div>
+      <div class="screenshot-card">
+        <div class="screen-emoji">📷</div>
+        <div class="screen-name">촬영 화면</div>
+        <div class="screen-desc">카메라/사진첩 선택과 촬영 팁</div>
+      </div>
+      <div class="screenshot-card">
+        <div class="screen-emoji">🤖</div>
+        <div class="screen-name">분석 결과</div>
+        <div class="screen-desc">3개 후보, 신뢰도, 생태 이야기</div>
+      </div>
+      <div class="screenshot-card">
+        <div class="screen-emoji">📚</div>
+        <div class="screen-name">내 도감</div>
+        <div class="screen-desc">카테고리 필터와 그리드 컬렉션</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Architecture -->
+  <section>
+    <h2 class="section-title">AI 아키텍처</h2>
+    <p class="section-desc">듀얼 API 폴백으로 안정적인 서비스 제공</p>
+    <div class="arch-diagram">
+      <div class="arch-flow">
+        <div class="arch-box user">📷 사진 촬영<br><small>압축 1024px JPEG</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box ai">🤖 OpenAI GPT-4o<br><small>Vision API (우선)</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box user">📋 3개 후보 종<br><small>+ 생태 이야기</small></div>
+      </div>
+      <div class="arch-flow" style="margin-bottom: 0;">
+        <div class="arch-box fallback" style="margin-left: 60px;">🔄 Claude Sonnet<br><small>자동 폴백</small></div>
+        <div class="arch-arrow">↗</div>
+        <div style="font-size: 0.85rem; color: var(--text-dim);">OpenAI 오류 시<br>자동 전환</div>
+      </div>
+      <br>
+      <p class="arch-note">
+        추가 AI 기능: GPT-Image 수채화 일러스트 생성 | OpenAI TTS 음성 가이드<br>
+        로컬 저장: Hive NoSQL DB | 오프라인 도감 열람 가능
+      </p>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section>
+    <h2 class="section-title">기술 스택</h2>
+    <p class="section-desc">검증된 기술로 안정적이고 빠른 앱 경험</p>
+    <div class="tech-grid">
+      <span class="tech-tag">Flutter 3.x</span>
+      <span class="tech-tag">Dart</span>
+      <span class="tech-tag">Riverpod</span>
+      <span class="tech-tag">OpenAI GPT-4o Vision</span>
+      <span class="tech-tag">Claude Sonnet</span>
+      <span class="tech-tag">GPT-Image</span>
+      <span class="tech-tag">OpenAI TTS</span>
+      <span class="tech-tag">Hive DB</span>
+      <span class="tech-tag">Dio HTTP</span>
+      <span class="tech-tag">iOS 15+</span>
+      <span class="tech-tag">Android API 24+</span>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="logo-text">산책도감 🌿</div>
+    <p>산책이 발견이 되는 순간</p>
+    <p style="margin-top: 12px;">
+      <span class="badge" style="font-size: 0.8rem;">com.moahub.natureSnap</span>
+    </p>
+    <p class="copyright">&copy; 2026 Moahub Labs. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

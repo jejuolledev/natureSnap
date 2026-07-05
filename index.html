@@ -91,6 +91,28 @@
       margin-bottom: 40px;
     }
 
+    .cta-button {
+      display: inline-block;
+      margin: 28px 0 4px;
+      padding: 14px 32px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(76,175,80,0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(76,175,80,0.45);
+    }
+    .cta-note {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
     .badge-row {
       display: flex;
       gap: 12px;
@@ -405,6 +427,9 @@
       <span class="badge">🎨 AI 수채화 일러스트</span>
       <span class="badge">🔊 음성 가이드</span>
     </div>
+    <!-- TODO: TestFlight 공개 링크 발급 후 아래 href를 TestFlight URL로 교체 -->
+    <a class="cta-button" href="mailto:jejuolledev@gmail.com?subject=%EC%82%B0%EC%B1%85%EB%8F%84%EA%B0%90%20%EC%B6%9C%EC%8B%9C%20%EC%95%8C%EB%A6%BC%20%EC%8B%A0%EC%B2%AD&body=%EC%B6%9C%EC%8B%9C%ED%95%98%EB%A9%B4%20%EC%95%8C%EB%A0%A4%EC%A3%BC%EC%84%B8%EC%9A%94%21">🔔 출시 알림 받기</a>
+    <p class="cta-note">버튼을 누르면 메일이 열립니다 · 정식 출시 시 알려드려요</p>
     <div class="scroll-hint">아래로 스크롤 ↓</div>
   </div>
 
